@@ -1,10 +1,20 @@
 Package: BSOLutils
-Title: A utilities and general helper R package with various functions
+Title: Utilities and general helper R package with various functions
 Version: 0.0.1
-Authors@R: c(person("Chris", "Mainey", , "c.mainey1@nhs.net", role = c("aut", "cre"), comment = c(ORCID ="0000-0002-3018-6171")),
-person("Siti", "Hassan", , "siti.hassan@nhs.net", role = "ctb"))
-    Maintainer: Chris Mainey <c.mainey1@nhs.net>
-Description: This package contains numerous helpfer functions.  There include confidence intervals, binomial thinning, standardisation methods and dispersion metrics.
+Authors@R: c(
+  person(
+    "Chris", "Mainey",
+    email = "c.mainey1@nhs.net",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-3018-6171")
+  ),
+  person(
+    "Siti", "Hassan",
+    email = "siti.hassan@nhs.net",
+    role = "ctb"
+  ))
+Maintainer: Chris Mainey <c.mainey1@nhs.net>
+Description: This package contains numerous helper functions.  There include functions for confidence intervals, binomial thinning, standardisation methods and dispersion metrics.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
