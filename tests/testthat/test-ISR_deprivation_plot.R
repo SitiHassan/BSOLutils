@@ -34,3 +34,35 @@ test_that("ISR_deprivation_plot respects custom y_scale", {
   y_scales <- scales[sapply(scales, function(s) "y" %in% s$aesthetics)]
   expect_equal(y_scales[[1]]$breaks, c(0,2,4))
 })
+
+test_that("ISR_deprivation_plotly returns a plotly object with a bar trace", {
+  data(ISR_example)
+  out <- ISR_deprivation(ISR_example)
+  p <- ISR_deprivation_plotly(out)
+
+  expect_s3_class(p, "plotly")
+  expect_s3_class(p, "htmlwidget")
+
+  pb <- plotly::plotly_build(p)
+
+  expect_true(length(pb$x$data) >= 1)
+  expect_equal(pb$x$data[[1]]$type, "bar")
+  expect_false(is.null(pb$x$data[[1]]$text))
+  expect_false(pb$x$layout$showlegend)
+})
+
+test_that("ISR_deprivation_plotly includes a reference line at y = 1", {
+  data(ISR_example)
+  out <- ISR_deprivation(ISR_example)
+  p <- ISR_deprivation_plotly(out)
+
+  pb <- plotly::plotly_build(p)
+
+  expect_true(length(pb$x$layout$shapes) >= 1)
+
+  ref_line <- pb$x$layout$shapes[[1]]
+
+  expect_equal(ref_line$type, "line")
+  expect_equal(ref_line$y0, 1)
+  expect_equal(ref_line$y1, 1)
+})
