@@ -254,7 +254,7 @@ ISR_deprivation_plotly <- function(
 #'
 #' raw_output <- ISR_deprivation(ISR_example)
 #'
-#' report_table <- make_ISR_deprivation_output(raw_output)
+#' report_table <- create_ISR_deprivation_output(raw_output)
 #'
 #' @export
 #'
@@ -262,7 +262,7 @@ ISR_deprivation_plotly <- function(
 #' @importFrom scales percent
 #' @importFrom glue glue
 #' @importFrom janitor clean_names
-make_ISR_deprivation_output <- function(data) {
+create_ISR_deprivation_output <- function(data) {
 
   data |>
     dplyr::mutate(
@@ -303,7 +303,7 @@ make_ISR_deprivation_output <- function(data) {
 #' Create a formatted gt table for ISR deprivation output
 #'
 #' This function converts the prepared output from
-#' \code{make_ISR_deprivation_output()} into a formatted \code{gt} table
+#' \code{create_ISR_deprivation_output()} into a formatted \code{gt} table
 #' for reporting. It applies consistent styling to improve readability and
 #' interpretation of deprivation comparisons against IMD 1.
 #'
@@ -316,7 +316,7 @@ make_ISR_deprivation_output <- function(data) {
 #' - Applies background colours to the Statistical Significance column
 #' - Bolds all column headers
 #'
-#' @param data A data frame produced by \code{make_ISR_deprivation_output()}
+#' @param data A data frame produced by \code{create_ISR_deprivation_output()}
 #'   containing the following columns:
 #'   \describe{
 #'   \item{IMD Quintile}{Deprivation quintile group.}
@@ -350,13 +350,13 @@ make_ISR_deprivation_output <- function(data) {
 #'
 #' @seealso
 #' \code{\link{ISR_deprivation}},
-#' \code{\link{make_ISR_deprivation_output}}
+#' \code{\link{create_ISR_deprivation_output}}
 #'
 #' @examples
 #' data(ISR_example)
 #'
 #' raw_output <- ISR_deprivation(ISR_example)
-#' table_data <- make_ISR_deprivation_output(raw_output)
+#' table_data <- create_ISR_deprivation_output(raw_output)
 #'
 #' ISR_deprivation_table(table_data)
 #'
