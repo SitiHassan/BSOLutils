@@ -6,7 +6,6 @@
 #' @returns Creates a vector of column names and derived SQL data types.
 #' Can be used within data types parameter of dbWriteTable() from DBI package.
 #' @export
-#' @import dplyr, purrr
 #'
 #' @examples derive_sql_data_types(mtcars)
 
@@ -14,8 +13,8 @@ derive_sql_data_types <- function(df, buffer = 0) {
 
   # Calculate max length by column
   max_lengths <- df |>
-    summarise(across(
-      where(is.character),
+    dplyr::summarise(dplyr::across(
+      dplyr::where(is.character),
       ~ max(nchar(., type = "bytes"), na.rm = TRUE)
     )) |>
     as.list()
@@ -35,7 +34,7 @@ derive_sql_data_types <- function(df, buffer = 0) {
   )
 
   # Create output vector of column names and data types
-  out <- map_chr(names(df), function(col) {
+  out <- purrr::map_chr(names(df), function(col) {
     col_class <- class(df[[col]])[1]
     mapper <- r_to_sql[[col_class]]
 

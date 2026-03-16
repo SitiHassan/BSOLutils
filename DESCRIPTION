@@ -11,16 +11,24 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports: 
     boot,
+    dplyr,
+    fs,
     ggplot2,
     grDevices,
     lubridate,
     MASS,
     NHSRdatasets,
+    plotly,
+    purrr,
     showtext,
-    sysfonts
+    sysfonts,
+    usethis
 Depends: 
     R (>= 3.5)
 LazyData: true
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Remotes: 
+    r-lib/fs,
+    plotly/plotly.R
