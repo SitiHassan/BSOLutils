@@ -200,6 +200,226 @@ ISR_deprivation_plotly <- function(
     )
 }
 
+#' Prepare ISR deprivation output for reporting
+#'
+#' This function enriches the output from \code{ISR_deprivation()} by adding
+#' interpretation and statistical significance columns.
+#' The resulting dataset can be used for reporting tables, for example
+#' when creating formatted tables with \code{ISR_deprivation_table()}.
+#'
+#' The function:
+#' - Rounds rate ratios and confidence intervals to two decimal places
+#' - Calculates the percentage difference from the reference group (IMD 1)
+#' - Generates an interpretation sentence describing the comparison with IMD 1
+#' - Determines statistical significance based on whether the confidence interval
+#'   crosses 1
+#'
+#' @param data A data frame produced by \code{ISR_deprivation()} containing the
+#'   following columns:
+#'   \describe{
+#'   \item{imd_quintile}{IMD quintile (2, 3, 4, 5, and 999 representing All Persons).}
+#'   \item{ratio}{Rate ratio comparing each IMD quintile against IMD 1 (reference group).}
+#'   \item{lowerCI}{Lower bound of the confidence interval for the rate ratio.}
+#'   \item{upperCI}{Upper bound of the confidence interval for the rate ratio.}
+#'   }
+#'
+#' @returns A data frame containing the following columns:
+#' \describe{
+#' \item{IMD Quintile}{Deprivation quintile group.}
+#' \item{Ratio}{Rate ratio compared with IMD 1.}
+#' \item{Lower CI}{Lower bound of the confidence interval.}
+#' \item{Upper CI}{Upper bound of the confidence interval.}
+#' \item{Interpretation}{Text interpretation describing the percentage difference
+#' from IMD 1 and the associated confidence interval.}
+#' \item{Statistical Significance}{Indicates whether the difference compared with
+#' IMD 1 is statistically significant.}
+#' }
+#'
+#' @details
+#' Statistical significance is determined as follows:
+#' \itemize{
+#' \item If the lower confidence interval is greater than 1, the rate is considered
+#' significantly higher than IMD 1.
+#' \item If the upper confidence interval is less than 1, the rate is considered
+#' significantly lower than IMD 1.
+#' \item Otherwise, the difference is not statistically significant.
+#' }
+#'
+#' @seealso
+#' \code{\link{ISR_deprivation}},
+#' \code{\link{ISR_deprivation_table}}
+#'
+#' @examples
+#' data(ISR_example)
+#'
+#' raw_output <- ISR_deprivation(ISR_example)
+#'
+#' report_table <- make_ISR_deprivation_output(raw_output)
+#'
+#' @export
+#'
+#' @importFrom dplyr mutate case_when select
+#' @importFrom scales percent
+#' @importFrom glue glue
+#' @importFrom janitor clean_names
+make_ISR_deprivation_output <- function(data) {
+
+  data |>
+    dplyr::mutate(
+      ratio = round(ratio, 2),
+      lowerCI = round(lowerCI, 2),
+      upperCI = round(upperCI, 2),
+      direction = dplyr::case_when(
+        ratio > 1 ~ "↑ Higher",
+        ratio < 1 ~ "↓ Lower",
+        TRUE ~ "→ Same as"
+      ),
+      abs_change = scales::percent(abs(ratio - 1), accuracy = 0.1),
+      CI_text = paste0(
+        scales::percent(lowerCI - 1, accuracy = 0.1), " to ",
+        scales::percent(upperCI - 1, accuracy = 0.1)
+      ),
+      interpretation = dplyr::case_when(
+        ratio == 1 ~ "Same as IMD 1 (95% CI: 0.0% to 0.0%)",
+        TRUE ~ glue::glue("{abs_change} {direction} than IMD 1 (95% CI: {CI_text})")
+      ),
+      statistical_significance = dplyr::case_when(
+        lowerCI > 1 ~ "Significantly higher than IMD 1",
+        upperCI < 1 ~ "Significantly lower than IMD 1",
+        TRUE ~ "Not statistically significant"
+      )
+    ) |>
+    dplyr::select(
+      imd_quintile,
+      ratio,
+      lowerCI,
+      upperCI,
+      interpretation,
+      statistical_significance
+    ) |>
+    janitor::clean_names(case = "title", abbreviations = c("IMD", "CI"))
+}
+
+#' Create a formatted gt table for ISR deprivation output
+#'
+#' This function converts the prepared output from
+#' \code{make_ISR_deprivation_output()} into a formatted \code{gt} table
+#' for reporting. It applies consistent styling to improve readability and
+#' interpretation of deprivation comparisons against IMD 1.
+#'
+#' The function:
+#' - Adds alternating row shading
+#' - Centres all columns
+#' - Sets a wider width for the Interpretation column
+#' - Highlights rate ratios above 1 in red
+#' - Highlights rate ratios below 1 in green
+#' - Applies background colours to the Statistical Significance column
+#' - Bolds all column headers
+#'
+#' @param data A data frame produced by \code{make_ISR_deprivation_output()}
+#'   containing the following columns:
+#'   \describe{
+#'   \item{IMD Quintile}{Deprivation quintile group.}
+#'   \item{Ratio}{Rate ratio compared with IMD 1.}
+#'   \item{Lower CI}{Lower bound of the confidence interval.}
+#'   \item{Upper CI}{Upper bound of the confidence interval.}
+#'   \item{Interpretation}{Narrative interpretation of the comparison with IMD 1.}
+#'   \item{Statistical Significance}{Significance category used for cell shading.}
+#'   }
+#'
+#' @returns A \code{gt_tbl} object that can be printed in Quarto, R Markdown,
+#' or other reporting workflows.
+#'
+#' @details
+#' The \code{Ratio} column is styled as follows:
+#' \itemize{
+#' \item Values greater than 1 are shown with red text and a light red background,
+#'   indicating a higher rate than IMD 1.
+#' \item Values less than 1 are shown with dark green text and a light green
+#'   background, indicating a lower rate than IMD 1.
+#' \item Values equal to 1 retain the default table styling, indicating no
+#'   difference from IMD 1.
+#' }
+#'
+#' The \code{Statistical Significance} column is shaded according to category:
+#' \itemize{
+#' \item \code{"Significantly higher than IMD 1"} = light red
+#' \item \code{"Significantly lower than IMD 1"} = light green
+#' \item \code{"Not statistically significant"} = light grey
+#' }
+#'
+#' @seealso
+#' \code{\link{ISR_deprivation}},
+#' \code{\link{make_ISR_deprivation_output}}
+#'
+#' @examples
+#' data(ISR_example)
+#'
+#' raw_output <- ISR_deprivation(ISR_example)
+#' table_data <- make_ISR_deprivation_output(raw_output)
+#'
+#' ISR_deprivation_table(table_data)
+#'
+#' @export
+#'
+#' @importFrom dplyr mutate case_when
+#' @importFrom gt gt opt_row_striping cols_align everything cols_width px
+#' @importFrom gt tab_style cell_text cell_fill cells_body
+#' @importFrom gt from_column cells_column_labels cols_hide tab_options pct
+ISR_deprivation_table <- function(data) {
+
+  sig_colors <- dplyr::case_when(
+    data$`Statistical Significance` == "Significantly higher than IMD 1" ~ "#f4cccc",
+    data$`Statistical Significance` == "Significantly lower than IMD 1" ~ "#d9ead3",
+    TRUE ~ "#f2f2f2"
+  )
+
+  data |>
+    dplyr::mutate(sig_fill = sig_colors) |>
+    gt::gt() |>
+    gt::opt_row_striping() |>
+    gt::cols_align(
+      align = "center",
+      columns = gt::everything()
+    ) |>
+    gt::cols_width(
+      Interpretation ~ gt::px(350)
+    ) |>
+    gt::tab_style(
+      style = list(
+        gt::cell_text(color = "red"),
+        gt::cell_fill(color = "#ffe5e5")
+      ),
+      locations = gt::cells_body(
+        columns = Ratio,
+        rows = Ratio > 1
+      )
+    ) |>
+    gt::tab_style(
+      style = list(
+        gt::cell_text(color = "darkgreen"),
+        gt::cell_fill(color = "#e6ffe6")
+      ),
+      locations = gt::cells_body(
+        columns = Ratio,
+        rows = Ratio < 1
+      )
+    ) |>
+    gt::tab_style(
+      style = gt::cell_fill(color = gt::from_column("sig_fill")),
+      locations = gt::cells_body(columns = `Statistical Significance`)
+    ) |>
+    gt::tab_style(
+      style = gt::cell_text(weight = "bold"),
+      locations = gt::cells_column_labels(gt::everything())
+    ) |>
+    gt::cols_hide(columns = sig_fill) |>
+    gt::tab_options(
+      table.width = gt::pct(100),
+      table.align = "center",
+      data_row.padding = gt::px(4)
+    )
+}
 
 
 
