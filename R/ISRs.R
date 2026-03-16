@@ -131,28 +131,36 @@ ISR_deprivation_plotly <- function(
     )
   }
 
-  # Create error bar columns for plotting
-  .dt$upper_error <- .dt$upperCI - .dt$ratio
-  .dt$lower_error <- .dt$ratio - .dt$lowerCI
+  # Remove IMD 1 from plotted data
+  .dt <- .dt |>
+    dplyr::filter(imd_quintile != "1")
 
-  # Order quintiles
-  if (all(.dt$imd_quintile %in% c("1", "2", "3", "4", "5", "999"))) {
-    .dt$imd_quintile <- factor(
-      .dt$imd_quintile,
-      levels = c("1", "2", "3", "4", "5", "999")
+  # Create error bar columns for plotting
+  .dt <- .dt |>
+    dplyr::mutate(
+      upper_error = upperCI - ratio,
+      lower_error = ratio - lowerCI
     )
-  }
+
+  # Order quintiles after removing IMD 1
+  .dt <- .dt |>
+    dplyr::mutate(
+      imd_quintile = factor(imd_quintile, levels = c("2", "3", "4", "5", "999"))
+    )
 
   # Custom tooltip
-  .dt$tooltip_text <- paste0(
-    "IMD Quintile: ", .dt$imd_quintile,
-    "<br>Ratio: ", round(.dt$ratio, 2),
-    "<br>Lower CI: ", round(.dt$lowerCI, 2),
-    "<br>Upper CI: ", round(.dt$upperCI, 2)
-  )
+  .dt <- .dt |>
+    dplyr::mutate(
+      tooltip_text = paste0(
+        "IMD Quintile: ", imd_quintile,
+        "<br>Ratio: ", round(ratio, 2),
+        "<br>Lower CI: ", round(lowerCI, 2),
+        "<br>Upper CI: ", round(upperCI, 2)
+      )
+    )
 
   # Bar colours
-  bar_cols <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f")
+  bar_cols <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854")
 
   n_bars <- nrow(.dt)
 
@@ -181,17 +189,24 @@ ISR_deprivation_plotly <- function(
           "Age-standardised Admission Ratio Ratios: ",
           description,
           "<br><i>A ratio of 1 means the rate = the rate in Quintile 1</i>"
-        )
+        ),
+        font = list(size = 16)
       ),
       showlegend = FALSE,
       margin = list(t = 120),
-      xaxis = list(title = "IMD Quintile (999 = All Persons)"),
+      xaxis = list(
+        title = "IMD Quintile (999 = All Persons)",
+        categoryorder = "array",
+        categoryarray = c("2", "3", "4", "5", "999")
+      ),
       yaxis = list(title = "Indirectly Standardised Ratio"),
       shapes = list(
         list(
           type = "line",
-          x0 = -0.5,
-          x1 = n_bars - 0.5,
+          xref = "paper",
+          x0 = 0,
+          x1 = 1,
+          yref = "y",
           y0 = 1,
           y1 = 1,
           line = list(color = "red", width = 2, dash = "dash")
@@ -199,7 +214,6 @@ ISR_deprivation_plotly <- function(
       )
     )
 }
-
 #' Prepare ISR deprivation output for reporting
 #'
 #' This function enriches the output from \code{ISR_deprivation()} by adding
