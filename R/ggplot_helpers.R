@@ -8,10 +8,11 @@
 #'
 #' @return A ggplot2 theme object.
 #' @examples
-#' ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
-#'   ggplot2::geom_point(aes(colour = mpg)) +
-#'   scale_colour_ICB_gradient() +
-#'   theme_ICB()
+#' library(ggplot2)
+#' ggplot(mtcars, aes(mpg, wt)) +
+#'   geom_point(aes(colour = mpg)) +
+#'   scale_colour_icb(discrete = FALSE) +
+#'   theme_icb()
 #'
 #' @export
 theme_icb <- function(base_size = 12, base_family = "Open Sans") {
@@ -32,25 +33,6 @@ theme_icb <- function(base_size = 12, base_family = "Open Sans") {
             # axis.text = ggplot2::element_text(colour = "#444444")
         )
 }
-
-
-
-theme_bsol <- function(base_family = "Open Sans") {
-    theme_classic(base_family = base_family) +
-        theme(
-            panel.background = element_blank()
-            , panel.grid = element_blank()
-            , plot.title = element_text(face="bold", size = 16)
-            , plot.subtitle = element_text(face="italic",size = 10)
-            , axis.line = element_line(colour = "#808080", linewidth = 0.75)
-            , strip.background = element_rect(fill = bsol_theme_cols("light_slate"))
-            #, panel.grid.major = element_line(colour = "#b3b3b3", linewidth = 0.4)
-            #, panel.grid.minor = element_line(colour = "#cfcfcf", linewidth = 0.4)
-
-        )
-}
-
-
 
 
 #' ICB Theme Colours
@@ -80,11 +62,11 @@ theme_bsol <- function(base_family = "Open Sans") {
 #' icb_theme_cols("green", "orange", "deep_navy", "nhs_blue")
 #' # or, select a single palette
 #' icb_theme_cols(palette = "ics_orange")
-bsol_theme_cols <- function(...,
+icb_theme_cols <- function(...,
                             palette = c(
                                 NA,
                                 "cluster",
-                                "main",
+                                "bsol",
                                 "alternative",
                                 "ics_blue",
                                 "ics_orange",

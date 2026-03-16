@@ -19,9 +19,10 @@ A theme designed to complement the ICB colour palette.
 Uses a light, neutral background and minimalist styling.
 }
 \examples{
-ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
-  ggplot2::geom_point(aes(colour = mpg)) +
-  scale_colour_ICB_gradient() +
-  theme_ICB()
+library(ggplot2)
+ggplot(mtcars, aes(mpg, wt)) +
+  geom_point(aes(colour = mpg)) +
+  scale_colour_icb(discrete = FALSE) +
+  theme_icb()
 
 }

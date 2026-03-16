@@ -55,7 +55,7 @@ icb_theme_colours <- c(
 #' # or, specify a palette
 #' icb_theme_pal("ics_orange")
 #' # a reverse palette
-#' icb_theme_pal("main", TRUE)
+#' icb_theme_pal("cluster", TRUE)
 icb_theme_pal <- function(palette = c(
     "cluster",
     "bsol",
@@ -70,7 +70,7 @@ reverse = FALSE,
 ...) {
     palette <- match.arg(palette)
 
-    pal <- bsol_theme_cols(palette = palette)
+    pal <- icb_theme_cols(palette = palette)
 
     if (reverse) pal <- rev(pal)
 

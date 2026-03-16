@@ -31,5 +31,5 @@ icb_theme_pal("bsol")
 # or, specify a palette
 icb_theme_pal("ics_orange")
 # a reverse palette
-icb_theme_pal("main", TRUE)
+icb_theme_pal("cluster", TRUE)
 }
