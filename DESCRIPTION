@@ -1,6 +1,6 @@
 Package: BSOLutils
 Title: Utilities and general helper R package with various functions
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: c(
   person(
     "Chris", "Mainey",
@@ -12,6 +12,11 @@ Authors@R: c(
     "Siti", "Hassan",
     email = "siti.hassan@nhs.net",
     role = "ctb"
+  ),
+  person(
+    "Archie", "Atack",
+    email = "a.atack@nhs.net",
+    role = "ctb"
   ))
 Maintainer: Chris Mainey <c.mainey1@nhs.net>
 Description: This package contains numerous helper functions.  There include functions for confidence intervals, binomial thinning, standardisation methods and dispersion metrics.
@@ -20,16 +25,27 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports: 
+    dplyr,
+    fs,
     ggplot2,
+    grDevices,
+    gt,
     lubridate,
     MASS,
     NHSRdatasets,
-    dplyr,
+    PHEindicatormethods,
+    plotly,
+    purrr,
     rlang,
-    PHEindicatormethods
+    showtext,
+    sysfonts,
+    usethis
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1.0)
 LazyData: true
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Remotes: 
+    r-lib/fs,
+    plotly/plotly.R
