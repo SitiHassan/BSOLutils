@@ -515,29 +515,56 @@ dsr_inner <- function(data,
             names(dsrs)[names(dsrs) == "lowercl"] <- "lower95_0cl"
             names(dsrs)[names(dsrs) == "uppercl"] <- "upper95_0cl"
         } else {
-            dsrs <- select(dsrs, !c("lower99_8cl", "upper99_8cl"))
+            dsrs <- dplyr::select(dsrs, -dplyr::any_of(c("lower99_8cl", "upper99_8cl"))) # remove 99.8% CI columns
         }
     }
 
     if (isTRUE(rtn_nonindependent_vardsr)) {
-        dsrs <- select(dsrs, group_cols(), "vardsr")
+        dsrs <- dplyr::select(
+            dsrs,
+            dplyr::group_cols(),
+            "vardsr"
+            )
     } else if (type == "lower") {
-        dsrs <- select(dsrs, !c("total_count", "total_pop", "value",
-                                starts_with("upper"), "vardsr",
-                                "confidence", "statistic", "method"))
+
+        dsrs <- dplyr::select(
+            dsrs,
+
+            dplyr::any_of(c("total_count", "total_pop", "value",
+                            "vardsr", "confidence", "statistic", "method")),
+            -dplyr::starts_with("upper"))
     } else if (type == "upper") {
-        dsrs <- select(dsrs, !c("total_count", "total_pop", "value",
-                                starts_with("lower"), "vardsr",
-                                "confidence", "statistic", "method"))
+
+        dsrs <- dplyr::select(
+            dsrs,
+            -dplyr::any_of(c("total_count", "total_pop", "value",
+                             "vardsr", "confidence", "statistic", "method")),
+            -dplyr::starts_with("lower")
+        )
+
     } else if (type == "value") {
-        dsrs <- select(dsrs, !c("total_count", "total_pop",
-                                starts_with("lower"), starts_with("upper"),
-                                "vardsr", "confidence", "statistic", "method"))
+
+        dsrs <- dplyr::select(
+            dsrs,
+            -dplyr::any_of(c("total_count", "total_pop",
+                             "vardsr", "confidence", "statistic", "method")),
+            -dplyr::starts_with("lower"),
+            -dplyr::starts_with("upper")
+        )
+
     } else if (type == "standard") {
-        dsrs <- select(dsrs, !c("vardsr", "confidence", "statistic", "method"))
+
+        dsrs <- dplyr::select(
+            dsrs,
+            -dplyr::any_of(c("vardsr", "confidence", "statistic", "method"))
+        )
+
     } else if (type == "full") {
-        dsrs <- select(dsrs, !c("vardsr"))
+
+        dsrs <- dplyr::select(dsrs, -dplyr::any_of("vardsr"))
+
     }
+
 
     dsrs
 }
