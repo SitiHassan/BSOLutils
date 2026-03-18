@@ -229,7 +229,7 @@ ISR_deprivation_plotly <- function(
     plotly::layout(
       title = list(
         text = paste0(
-          title_prefix, ": ", description,
+          measure_title, ": ", description,
           "<br><span style='font-size:12px'><i>A ratio of 1 means the rate = the rate in Quintile 1</i></span>"
         ),
         font = list(size = 14)
