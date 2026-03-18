@@ -322,27 +322,34 @@ ISR_deprivation_plotly <- function(
 create_ISR_deprivation_output <- function(data) {
 
   data |>
+    # Keep raw values for logic
     dplyr::mutate(
-      ratio = round(ratio, 2),
-      lowerCI = round(lowerCI, 2),
-      upperCI = round(upperCI, 2),
+      ratio_raw   = ratio,
+      lowerCI_raw = lowerCI,
+      upperCI_raw = upperCI
+    ) |>
+    # Rounded values for display only
+    dplyr::mutate(
+      ratio   = round(ratio_raw, 2),
+      lowerCI = round(lowerCI_raw, 2),
+      upperCI = round(upperCI_raw, 2),
       direction = dplyr::case_when(
-        ratio > 1 ~ "↑ Higher",
-        ratio < 1 ~ "↓ Lower",
+        ratio_raw > 1 ~ "↑ Higher",
+        ratio_raw < 1 ~ "↓ Lower",
         TRUE ~ "→ Same as"
       ),
-      abs_change = scales::percent(abs(ratio - 1), accuracy = 0.1),
+      abs_change = scales::percent(abs(ratio_raw - 1), accuracy = 0.1),
       CI_text = paste0(
-        scales::percent(lowerCI - 1, accuracy = 0.1), " to ",
-        scales::percent(upperCI - 1, accuracy = 0.1)
+        scales::percent(lowerCI_raw - 1, accuracy = 0.1), " to ",
+        scales::percent(upperCI_raw - 1, accuracy = 0.1)
       ),
       interpretation = dplyr::case_when(
-        ratio == 1 ~ "Same as IMD 1 (95% CI: 0.0% to 0.0%)",
+        ratio_raw == 1 ~ "Same as IMD 1 (95% CI: 0.0% to 0.0%)",
         TRUE ~ glue::glue("{abs_change} {direction} than IMD 1 (95% CI: {CI_text})")
       ),
       statistical_significance = dplyr::case_when(
-        lowerCI > 1 ~ "Significantly higher than IMD 1",
-        upperCI < 1 ~ "Significantly lower than IMD 1",
+        lowerCI_raw > 1 ~ "Significantly higher than IMD 1",
+        upperCI_raw < 1 ~ "Significantly lower than IMD 1",
         TRUE ~ "Not statistically significant"
       )
     ) |>
