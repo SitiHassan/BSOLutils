@@ -1,7 +1,5 @@
 ## Unit tests for `calculate_dsr()`
 
-library(dplyr)
-
 test_that("calculate_dsr works for basic grouped data", {
     df <- tibble::tibble(
         area = rep(c("North", "South"), each = 3),
