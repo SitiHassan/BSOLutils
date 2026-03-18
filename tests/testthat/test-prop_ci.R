@@ -19,7 +19,10 @@ test_that("`prop_ci()` basic behaviour and bounds", {
 
 test_that("`prop_ci()` handles zero numerator or denominator", {
   expect_equal(prop_ci(0, 10)$Rate, 0)
-  expect_true(is.nan(prop_ci(1, 0)$Rate) || is.infinite(prop_ci(1, 0)$Rate))
+  expect_warning(expect_warning(a <- prop_ci(1, 0)))
+  expect_warning(expect_warning(b <- prop_ci(1, 0)))
+  expect_true(is.nan(a$LowerCI))
+  expect_true(is.infinite(b$Rate) )
 })
 
 # placeholder for a known value
@@ -28,3 +31,6 @@ test_that("`prop_ci()` known value placeholder", {
   # this result could be calculated externally
   expect_equal(prop_ci(1, 4)$Rate, 0.25)
 })
+
+prop_ci
+sqrt
