@@ -12,7 +12,7 @@ ggplotly_bsol(p = ggplot2::last_plot(), font, ...)
 \item{font}{required font, extracted from the plot if not specified otherwise}
 
 \item{...}{Arguments to the layout object. For documentation,
-see \url{https://plotly.com/r/reference/layout/}}
+see \url{https://plotly.com/r/reference/#Layout_and_layout_style_objects}}
 }
 \value{
 A plotly object
