@@ -4,12 +4,18 @@
 \name{BSOLutils-package}
 \alias{BSOLutils}
 \alias{BSOLutils-package}
-\title{BSOLutils: A utilities and general helper R package with various functions}
+\title{BSOLutils: Utilities and general helper R package with various functions}
 \description{
-This package contains numerous helpfer functions. There include confidence intervals, binomial thinning, standardisation methods and dispersion metrics.
+This package contains numerous helper functions. There include functions for confidence intervals, binomial thinning, standardisation methods and dispersion metrics.
 }
 \author{
 \strong{Maintainer}: Chris Mainey \email{c.mainey1@nhs.net} (\href{https://orcid.org/0000-0002-3018-6171}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Siti Hassan \email{siti.hassan@nhs.net} [contributor]
+  \item Archie Atack \email{a.atack@nhs.net} [contributor]
+}
 
 }
 \keyword{internal}
