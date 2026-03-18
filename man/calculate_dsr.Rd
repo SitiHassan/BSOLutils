@@ -108,6 +108,9 @@ For non-independent events, \code{x} should represent the number of unique
 individuals within each event frequency category, rather than the total
 number of events. In that case, the function first derives a custom variance
 and then applies it in the final DSR calculation.
+
+This implementation returns DSRs and confidence intervals for all valid input
+rows and does not suppress results when the total count is less than 10.
 }
 \section{Source}{
 
@@ -129,7 +132,7 @@ dsr_data <- data.frame(
 
 # Basic grouped DSR
 dsr_data \%>\%
-  group_by(area) \%>\%
+  dplyr::group_by(area) \%>\%
   calculate_dsr(
     x = events,
     n = population,
@@ -138,7 +141,7 @@ dsr_data \%>\%
 
 # Return both 95\% and 99.8\% confidence intervals
 dsr_data \%>\%
-  group_by(area) \%>\%
+  dplyr::group_by(area) \%>\%
   calculate_dsr(
     x = events,
     n = population,
@@ -148,7 +151,7 @@ dsr_data \%>\%
 
 # Use a scalar multiplier
 dsr_data \%>\%
-  group_by(area) \%>\%
+  dplyr::group_by(area) \%>\%
   calculate_dsr(
     x = events,
     n = population,
@@ -158,10 +161,10 @@ dsr_data \%>\%
 
 # Use a multiplier column
 dsr_data2 <- dsr_data \%>\%
-  mutate(rate_multiplier = 100000)
+  dplyr:mutate(rate_multiplier = 100000)
 
 dsr_data2 \%>\%
-  group_by(area) \%>\%
+  dplyr::group_by(area) \%>\%
   calculate_dsr(
     x = events,
     n = population,
@@ -171,7 +174,7 @@ dsr_data2 \%>\%
 
 # Return a reduced output without metadata columns
 dsr_data \%>\%
-  group_by(area) \%>\%
+  dplyr::group_by(area) \%>\%
   calculate_dsr(
     x = events,
     n = population,
@@ -184,7 +187,7 @@ if (requireNamespace("tidyr", quietly = TRUE)) {
   library(tidyr)
 
   dsr_freq_data <- dsr_data \%>\%
-    mutate(
+    dplyr:mutate(
       freq_1 = pmax(events - 2, 0),
       freq_2 = 1,
       freq_3 = 1
@@ -195,7 +198,7 @@ if (requireNamespace("tidyr", quietly = TRUE)) {
       names_to = "event_frequency",
       values_to = "unique_people"
     ) \%>\%
-    mutate(
+    dplyr:mutate(
       event_frequency = dplyr::case_when(
         event_frequency == "freq_1" ~ 1L,
         event_frequency == "freq_2" ~ 2L,
@@ -204,7 +207,7 @@ if (requireNamespace("tidyr", quietly = TRUE)) {
     )
 
   dsr_freq_data \%>\%
-    group_by(area) \%>\%
+    dplyr::group_by(area) \%>\%
     calculate_dsr(
       x = unique_people,
       n = population,
