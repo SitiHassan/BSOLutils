@@ -369,11 +369,11 @@ calculate_dsr <- function(data,
 
     data <- data %>% dplyr::group_by(eventfreq, .add = TRUE)
 
-    grps <- group_vars(data)[!group_vars(data) %in% "eventfreq"]
+    grps <- dplyr::group_vars(data)[!dplyr::group_vars(data) %in% "eventfreq"]
 
     check_groups <- data %>%
         dplyr::group_by(pick(all_of(c(grps, "ageband")))) %>%
-        summarise(
+        dplyr::summarise(
             num_n = n_distinct(.data$n),
             num_stdpop = n_distinct(.data$stdpop),
             .groups = "drop"
@@ -397,20 +397,20 @@ calculate_dsr <- function(data,
         ) %>%
         dplyr::mutate(freqvars = .data$vardsr * .data$eventfreq^2) %>%
         dplyr::group_by(pick(all_of(grps))) %>%
-        summarise(custom_vardsr = sum(.data$freqvars), .groups = "drop")
+        dplyr::summarise(custom_vardsr = sum(.data$freqvars), .groups = "drop")
 
     # collapse events; retain multiplier
     event_data <- data %>%
         dplyr::mutate(events = .data$eventfreq * .data$x) %>%
         dplyr::group_by(pick(all_of(c(grps, "ageband", "n", "stdpop")))) %>%
-        summarise(
+        dplyr::summarise(
             x = sum(.data$events, na.rm = TRUE),
             multiplier = first(.data$multiplier),
             .groups = "drop"
         )
 
     dsrs <- event_data %>%
-        left_join(freq_var, by = grps) %>%
+        dplyr::left_join(freq_var, by = grps) %>%
         dplyr::group_by(pick(all_of(grps))) %>%
         dsr_inner(
             type = type,
@@ -455,10 +455,10 @@ dsr_inner <- function(data,
     if (anyNA(data$multiplier)) stop("multiplier column cannot have missing values")
     if (any(data$multiplier <= 0)) stop("multiplier column values must be > 0")
 
-    grps <- group_vars(data)
+    grps <- dplyr::group_vars(data)
     if (length(grps) > 0) {
         mult_check <- data %>%
-            summarise(nuniq_mult = n_distinct(.data$multiplier), .groups = "drop")
+            dplyr::summarise(nuniq_mult = n_distinct(.data$multiplier), .groups = "drop")
 
         if (any(mult_check$nuniq_mult > 1)) {
             stop("Within-group multiplier must be constant.")
@@ -477,7 +477,7 @@ dsr_inner <- function(data,
             wt_rate = PHEindicatormethods:::na.zero(.data$x) * .data$stdpop / .data$n,
             sq_rate = PHEindicatormethods:::na.zero(.data$x) * (.data$stdpop / .data$n)^2
         ) %>%
-        summarise(
+        dplyr::summarise(
             total_count = sum(.data$x, na.rm = TRUE),
             total_pop = sum(.data$n),
             base_value = sum(.data$wt_rate) / sum(.data$stdpop),
