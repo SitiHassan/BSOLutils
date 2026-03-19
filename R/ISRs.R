@@ -432,14 +432,18 @@ create_ISR_deprivation_output <- function(data) {
 #' @importFrom gt from_column cells_column_labels cols_hide tab_options pct
 ISR_deprivation_table <- function(data) {
 
-  sig_colors <- dplyr::case_when(
-    data$`Statistical Significance` == "Significantly higher than IMD 1" ~ "#f4cccc",
-    data$`Statistical Significance` == "Significantly lower than IMD 1" ~ "#d9ead3",
-    TRUE ~ "#f2f2f2"
+  # Define which rows are statistically significant (TRUE/FALSE)
+  sig_rows <- data$`Statistical Significance` %in% c(
+    "Significantly higher than IMD 1",
+    "Significantly lower than IMD 1"
   )
 
+  # Define colour for significant cells
+  sig_fill_hex <- "#ffe5e5"  # light red background
+  sig_text_hex <- "#b30000"  # dark red text
+
   data |>
-    dplyr::mutate(sig_fill = sig_colors) |>
+    dplyr::mutate(.sig_row = sig_rows) |>
     gt::gt() |>
     gt::opt_row_striping() |>
     gt::cols_align(
@@ -449,42 +453,42 @@ ISR_deprivation_table <- function(data) {
     gt::cols_width(
       Interpretation ~ gt::px(350)
     ) |>
+    # Colour the Ratio column ONLY when statistically significant
     gt::tab_style(
       style = list(
-        gt::cell_text(color = "red"),
-        gt::cell_fill(color = "#ffe5e5")
+        gt::cell_text(color = sig_text_hex),
+        gt::cell_fill(color = sig_fill_hex)
       ),
       locations = gt::cells_body(
         columns = Ratio,
-        rows = Ratio > 1
+        rows = .sig_row
       )
     ) |>
+    # Colour the Statistical Significance column ONLY when statistically significant
     gt::tab_style(
       style = list(
-        gt::cell_text(color = "darkgreen"),
-        gt::cell_fill(color = "#e6ffe6")
+        gt::cell_text(color = sig_text_hex),
+        gt::cell_fill(color = sig_fill_hex)
       ),
       locations = gt::cells_body(
-        columns = Ratio,
-        rows = Ratio < 1
+        columns = `Statistical Significance`,
+        rows = .sig_row
       )
     ) |>
-    gt::tab_style(
-      style = gt::cell_fill(color = gt::from_column("sig_fill")),
-      locations = gt::cells_body(columns = `Statistical Significance`)
-    ) |>
+    # Make column labels bold
     gt::tab_style(
       style = gt::cell_text(weight = "bold"),
       locations = gt::cells_column_labels(gt::everything())
     ) |>
-    gt::cols_hide(columns = sig_fill) |>
+    # Hide helper column
+    gt::cols_hide(columns = .sig_row) |>
     gt::tab_options(
       table.width = gt::pct(100),
       table.align = "center",
       data_row.padding = gt::px(4)
     )
-}
 
+}
 
 
 #' ISR example dataset
